@@ -1,0 +1,8 @@
+コピーボタンを表示するコピー元のプロジェクトを選択
+<% @project_relation = EasyIssueCopyProjectRelation.where(project_id: @project.id).first %>
+<% @related_project = @project_relation ? Project.find(@project_relation.related_project_id) : nil %>
+<%= labelled_form_for :easy_issue_copy, @related_projects, :url => project_easy_issue_copy_setting_path(@project) do |f| %>
+  <p><%= f.select :project_id, project_tree_options_for_select(Project.where(Project.allowed_to_condition(User.current, :add_issues)), :selected => @related_project), :required => true %></p>
+
+  <%= f.submit l(:button_update) %>
+<% end %>

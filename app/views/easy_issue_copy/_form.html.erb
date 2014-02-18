@@ -1,0 +1,33 @@
+<div id="easy_issue_copy">
+<% project_relation = EasyIssueCopyProjectRelation.where(related_project_id: project.id).first %>
+<% if project_relation %>
+  <% related_project = project_relation.project %>
+  <% related_project_users = related_project.members.map{|member| member.user_id} %>
+<% end %>
+
+<% if related_project && related_project_users.include?(User.current.id) %>
+  <%= form_for issue, :url => {controller: 'issues', action: 'create'}, :method => "POST" do |f| %>
+    <div style="display:none;">
+      <%= f.hidden_field :is_private %>
+      <%= hidden_field_tag 'issue[project_id]', related_project.id %>
+      <%= f.hidden_field :tracker_id %>
+      <%= f.hidden_field :subject %>
+      <div style="width:560px;">
+        <%= f.hidden_field :description %>
+        <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n\##{issue.id}", maxlength: 10 %>
+      </div>
+      <%= f.hidden_field :status_id %>
+      <%= f.hidden_field :priority_id %>
+      <%# f.hidden_field :assigned_to_id %>
+      <%= f.hidden_field :start_date %>
+      <%= f.hidden_field :due_date %>
+      <%= f.hidden_field :estimated_hours %>
+      <%= f.hidden_field :done_ratio %>
+      <%= hidden_field_tag 'issue[easy_issue_copy][original_issue_id]', issue.id %>
+  
+    </div>
+    <%= f.submit "copy" %>
+  <% end %>
+<% end %>
+</div>
+      <%# text_area_tag 'issue[description]', issue.description + "\n\##{issue.id}" %>
