@@ -3,9 +3,14 @@
 <% if project_relation %>
   <% related_project = project_relation.project %>
   <% related_project_users = related_project.members.map{|member| member.user_id} %>
+  <% already_related_issue = EasyIssueCopyIssueRelation.where(original_issue_id: issue.id.to_i).first %>
 <% end %>
 
-<% if related_project && related_project_users.include?(User.current.id) %>
+<% if related_project && related_project_users.include?(User.current.id) && already_related_issue %>
+  <%= link_to '内部チケットを参照する', issue_path(id: already_related_issue.copied_issue_id) %>
+  <% p "$"*20 %>
+  <% p already_related_issue %>
+<% elsif related_project && related_project_users.include?(User.current.id) %>
   <%= form_for issue, :url => {controller: 'issues', action: 'create'}, :method => "POST" do |f| %>
     <div style="display:none;">
       <%= f.hidden_field :is_private %>
@@ -14,7 +19,7 @@
       <%= f.hidden_field :subject %>
       <div style="width:560px;">
         <%= f.hidden_field :description %>
-        <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n\##{issue.id}", maxlength: 10 %>
+        <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n元チケット \##{issue.id}", maxlength: 10 %>
       </div>
       <%= f.hidden_field :status_id %>
       <%= f.hidden_field :priority_id %>
@@ -23,6 +28,9 @@
       <%= f.hidden_field :due_date %>
       <%= f.hidden_field :estimated_hours %>
       <%= f.hidden_field :done_ratio %>
+
+      <%= hidden_field_tag 'issue[easy_issue_copy][parent_id]', issue.id %>
+
       <%= hidden_field_tag 'issue[easy_issue_copy][original_issue_id]', issue.id %>
   
     </div>

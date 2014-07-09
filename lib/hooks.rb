@@ -6,6 +6,14 @@ module Redmine_easy_issue_copy
         :locals => context
       })
     end
+
+    def controller_issues_new_after_save(context)
+      issue = context[:issue]
+      EasyIssueCopyIssueRelation.create!(
+        original_issue_id: context[:params][:issue][:easy_issue_copy][:parent_id].to_i,
+        copied_issue_id: issue.id.to_i
+      )
+    end
   
     def controller_issues_new_before_save(context)
       if context[:params][:issue][:easy_issue_copy]
