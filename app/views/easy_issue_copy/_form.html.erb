@@ -15,13 +15,13 @@
     <div style="display:none;">
       <%= f.hidden_field :is_private %>
       <%= hidden_field_tag 'issue[project_id]', related_project.id %>
-      <%= f.hidden_field :tracker_id %>
+      <%= hidden_field_tag 'issue[tracker_id]', issue.tracker_id, id: 'easy_issue_copy_tracker_id' %>
       <%= f.hidden_field :subject %>
       <div style="width:560px;">
         <%= f.hidden_field :description %>
         <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n元チケット \##{issue.id}", maxlength: 10 %>
       </div>
-      <%= f.hidden_field :status_id %>
+      <%= hidden_field_tag 'issue[status_id]', issue.tracker_id, id: 'easy_issue_copy_status_id %>
       <%= f.hidden_field :priority_id %>
       <%# f.hidden_field :assigned_to_id %>
       <%= f.hidden_field :start_date %>
