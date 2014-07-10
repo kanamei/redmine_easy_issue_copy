@@ -21,7 +21,7 @@
         <%= f.hidden_field :description %>
         <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n元チケット \##{issue.id}", maxlength: 10 %>
       </div>
-      <%= hidden_field_tag 'issue[status_id]', issue.tracker_id, id: 'easy_issue_copy_status_id %>
+      <%= hidden_field_tag 'issue[status_id]', issue.tracker_id, id: 'easy_issue_copy_status_id' %>
       <%= f.hidden_field :priority_id %>
       <%# f.hidden_field :assigned_to_id %>
       <%= f.hidden_field :start_date %>
