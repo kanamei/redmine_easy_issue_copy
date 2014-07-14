@@ -45,22 +45,26 @@
 <% end %>
 </div>
 
-<% if related_project_to_external && related_project_users_to_external.include?(User.current.id) && !already_related_issue_to_external %>
-  <hr>
-  <p>
-    <div style='text-align: right;'><a href='#' id='easy_issue_copy_link_trigger' style='font-size: xx-small;'>外部プロジェクトのチケットと関連付け</a></div>
-    <div id='easy_issue_copy_link_selecter' style='display: none;'>
-    <%= form_tag issue_easy_issue_copy_link_path(issue.id) do %>
-      関連付ける外部チケットのID
-      <%= text_field_tag 'easy_issue_copy[external_issue_id]' %>
-      <%= submit_tag "送信" %>
-    <% end %>
-    </div>
-  </p>
-  <hr>
-  <script>
-     $("#easy_issue_copy_link_trigger").click(function(){
-       $("#easy_issue_copy_link_selecter").toggle();
-     });
-  </script>
+<% if related_project_to_external && related_project_users_to_external.include?(User.current.id) %>
+  <% if already_related_issue_to_external %>
+    aaaa<%= link_to("外部チケットを参照する", issue_path(id: already_related_issue_to_external.original_issue_id)) %>
+  <% else %>
+    <hr>
+    <p>
+      <div style='text-align: right;'><a href='#' id='easy_issue_copy_link_trigger' style='font-size: xx-small;'>外部プロジェクトのチケットと関連付け</a></div>
+      <div id='easy_issue_copy_link_selecter' style='display: none;'>
+      <%= form_tag issue_easy_issue_copy_link_path(issue.id) do %>
+        関連付ける外部チケットのID
+        <%= text_field_tag 'easy_issue_copy[external_issue_id]' %>
+        <%= submit_tag "送信" %>
+      <% end %>
+      </div>
+    </p>
+    <hr>
+    <script>
+       $("#easy_issue_copy_link_trigger").click(function(){
+         $("#easy_issue_copy_link_selecter").toggle();
+       });
+    </script>
+  <% end %>
 <% end %>
