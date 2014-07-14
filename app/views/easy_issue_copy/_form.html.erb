@@ -47,7 +47,7 @@
 
 <% if related_project_to_external && related_project_users_to_external.include?(User.current.id) %>
   <% if already_related_issue_to_external %>
-    aaaa<%= link_to("外部チケットを参照する", issue_path(id: already_related_issue_to_external.original_issue_id)) %>
+    <%= link_to("外部チケットを参照する", issue_path(id: already_related_issue_to_external.original_issue_id)) %>
   <% else %>
     <hr>
     <p>
