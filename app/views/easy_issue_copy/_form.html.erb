@@ -1,70 +1,8 @@
-<div id="easy_issue_copy">
-<% project_relation_to_internal = EasyIssueCopyProjectRelation.where(related_project_id: project.id).first %>
+<% project_relation_to_internal = EasyIssueCopyProjectRelation.where(project_id: project.id).first %>
 <% if project_relation_to_internal %>
   <% related_project_to_internal = project_relation_to_internal.internal_project %>
   <% related_project_users_to_internal = related_project_to_internal.members.map{|member| member.user_id} %>
-  <% already_related_issue_to_internal = EasyIssueCopyIssueRelation.where(original_issue_id: issue.id.to_i).first %>
-<% end %>
-
-<% project_relation_to_external = EasyIssueCopyProjectRelation.where(project_id: project.id).first %>
-<% if project_relation_to_external %>
-  <% related_project_to_external = project_relation_to_external.external_project %>
-  <% related_project_users_to_external = related_project_to_external.members.map{|member| member.user_id} %>
-  <% already_related_issue_to_external = EasyIssueCopyIssueRelation.where(copied_issue_id: issue.id.to_i).first %>
-<% end %>
-
-
-<% if related_project_to_internal && related_project_users_to_internal.include?(User.current.id) && already_related_issue_to_internal %>
-  <%= link_to '内部チケットを参照する', issue_path(id: already_related_issue_to_internal.copied_issue_id) %>
-<% elsif related_project_to_internal && related_project_users_to_internal.include?(User.current.id) %>
-  <%= form_for issue, :url => {controller: 'issues', action: 'create'}, :method => "POST" do |f| %>
-    <div style="display:none;">
-      <%= f.hidden_field :is_private %>
-      <%= hidden_field_tag 'issue[project_id]', related_project_to_internal.id %>
-      <%= hidden_field_tag 'issue[tracker_id]', issue.tracker_id, id: 'easy_issue_copy_tracker_id' %>
-      <%= f.hidden_field :subject %>
-      <div style="width:560px;">
-        <%= f.hidden_field :description %>
-        <%= text_area_tag 'issue[description]', (issue.description ? issue.description : "") + "\n元チケット \##{issue.id}", maxlength: 10 %>
-      </div>
-      <%= hidden_field_tag 'issue[status_id]', issue.tracker_id, id: 'easy_issue_copy_status_id' %>
-      <%= f.hidden_field :priority_id %>
-      <%# f.hidden_field :assigned_to_id %>
-      <%= f.hidden_field :start_date %>
-      <%= f.hidden_field :due_date %>
-      <%= f.hidden_field :estimated_hours %>
-      <%= f.hidden_field :done_ratio %>
-
-      <%= hidden_field_tag 'issue[easy_issue_copy][parent_id]', issue.id %>
-
-      <%= hidden_field_tag 'issue[easy_issue_copy][original_issue_id]', issue.id %>
-  
-    </div>
-    <%= f.submit l(:copy_to) %>
-  <% end %>
-<% end %>
-</div>
-
-<% if related_project_to_external && related_project_users_to_external.include?(User.current.id) %>
-  <% if already_related_issue_to_external %>
-    <%= link_to("外部チケットを参照する", issue_path(id: already_related_issue_to_external.original_issue_id)) %>
-  <% else %>
-    <hr>
-    <p>
-      <div style='text-align: right;'><a href='#' id='easy_issue_copy_link_trigger' style='font-size: xx-small;'>外部プロジェクトのチケットと関連付け</a></div>
-      <div id='easy_issue_copy_link_selecter' style='display: none;'>
-      <%= form_tag issue_easy_issue_copy_link_path(issue.id) do %>
-        関連付ける外部チケットのID
-        <%= text_field_tag 'easy_issue_copy[external_issue_id]' %>
-        <%= submit_tag "送信" %>
-      <% end %>
-      </div>
-    </p>
-    <hr>
-    <script>
-       $("#easy_issue_copy_link_trigger").click(function(){
-         $("#easy_issue_copy_link_selecter").toggle();
-       });
-    </script>
+  <% if related_project_to_internal && related_project_users_to_internal.include?(User.current.id) %>
+    <%= hidden_field_tag 'issue[easy_issue_copy][original_issue_id]', params["original_issue_id"] %>
   <% end %>
 <% end %>

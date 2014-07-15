@@ -1,0 +1,53 @@
+<div id="easy_issue_copy">
+<% project_relation_to_internal = EasyIssueCopyProjectRelation.where(related_project_id: project.id).first %>
+<% if project_relation_to_internal %>
+  <% related_project_to_internal = project_relation_to_internal.internal_project %>
+  <% related_project_users_to_internal = related_project_to_internal.members.map{|member| member.user_id} %>
+  <% already_related_issue_to_internal = EasyIssueCopyIssueRelation.where(original_issue_id: issue.id.to_i).first %>
+<% end %>
+
+<% project_relation_to_external = EasyIssueCopyProjectRelation.where(project_id: project.id).first %>
+<% if project_relation_to_external %>
+  <% related_project_to_external = project_relation_to_external.external_project %>
+  <% related_project_users_to_external = related_project_to_external.members.map{|member| member.user_id} %>
+  <% already_related_issue_to_external = EasyIssueCopyIssueRelation.where(copied_issue_id: issue.id.to_i).first %>
+<% end %>
+
+
+<% if related_project_to_internal && related_project_users_to_internal.include?(User.current.id) && already_related_issue_to_internal %>
+  <%= link_to '内部チケットを参照する', issue_path(id: already_related_issue_to_internal.copied_issue_id) %>
+<% elsif related_project_to_internal && related_project_users_to_internal.include?(User.current.id) %>
+
+<% options = {project_id: related_project_to_internal.id, easy_issue_copy: 1234, 'original_issue_id' => issue.id, 'issue[subject]' => issue.subject, 'issue[description]' => issue.description, 'issue[tracker_id]' => issue.tracker_id, 'issue[status_id]' => issue.status_id, 'issue[due_date]' => issue.due_date, 'issue[priority_id]' => issue.priority_id} %>
+<% watcher_ids = issue.watchers.map(&:user_id) %>
+<% duplicate_user_ids = related_project_users_to_internal.select{|u| watcher_ids.include?(u) } %>
+<% duplicate_user_ids.each{|u| options['issue[watcher_user_ids][]'] = u } %>
+
+  <%=link_to "外部チケットをコピーする", new_project_issue_path(options) %>
+
+<% end %>
+</div>
+
+<% if related_project_to_external && related_project_users_to_external.include?(User.current.id) %>
+  <% if already_related_issue_to_external %>
+    <%= link_to("外部チケットを参照する", issue_path(id: already_related_issue_to_external.original_issue_id)) %>
+  <% else %>
+    <hr>
+    <p>
+      <div style='text-align: right;'><a href='#' id='easy_issue_copy_link_trigger' style='font-size: xx-small;'>外部プロジェクトのチケットと関連付け</a></div>
+      <div id='easy_issue_copy_link_selecter' style='display: none;'>
+      <%= form_tag issue_easy_issue_copy_link_path(issue.id) do %>
+        関連付ける外部チケットのID
+        <%= text_field_tag 'easy_issue_copy[external_issue_id]' %>
+        <%= submit_tag "送信" %>
+      <% end %>
+      </div>
+    </p>
+    <hr>
+    <script>
+       $("#easy_issue_copy_link_trigger").click(function(){
+         $("#easy_issue_copy_link_selecter").toggle();
+       });
+    </script>
+  <% end %>
+<% end %>
