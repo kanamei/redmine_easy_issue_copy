@@ -10,11 +10,11 @@ end
 
 Redmine::Plugin.register :redmine_easy_issue_copy do
   name 'Redmine Easy Issue Copy plugin'
-  author 'Tatsuhiko Shimomura'
+  author 'Kanamei Corporation'
   description 'This plugin enable copy ticket between related project. Project can relate by project setting.'
-  version '1.0.0'
-  url 'https://github.com/shim0mura/redmine_easy_issue_copy'
-  author_url 'https://github.com/shim0mura/'
+  version '1.0.1'
+  url 'https://github.com/kanamei/redmine_easy_issue_copy'
+  author_url 'https://github.com/11fe'
   project_module :easy_issue_copy do
     permission :set_copy_relation, :setting => [:index, :update]
   end
